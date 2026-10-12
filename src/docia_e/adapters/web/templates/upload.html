@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Nueva aportación · DocIA+{% endblock %}
+{% block content %}
+<h1>Nueva aportación</h1>
+<p>Quedan fuera expedientes, entrevistas, diagnósticos, listas nominativas y recomendaciones individualizadas. Subir el archivo no lo habilita para T.</p>
+<p>Límite: {{ limits.max_upload_mib }} MiB (1 MiB = 1 048 576 bytes), {{ limits.max_pdf_pages }} páginas PDF.</p>
+{% if error %}
+  <div class="message error" role="alert">
+    <p>{{ error.message }}</p>
+    {% if error.next_action %}<p>{{ error.next_action }}</p>{% endif %}
+    {% if error.field_errors %}
+      <ul>
+        {% for field, text in error.field_errors.items() %}
+          <li>{{ field }}: {{ text }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endif %}
+<form class="stack" method="post" action="{{ url_for('upload_new') }}" enctype="multipart/form-data" data-upload>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="idempotency_key" value="{{ form.idempotency_key }}">
+  <label for="center_id">Centro</label>
+  <select id="center_id" name="center_id" required>
+    {% for center in actor.center_ids %}
+      <option value="{{ center }}" {% if form.center_id == center %}selected{% endif %}>{{ center }}</option>
+    {% endfor %}
+  </select>
+  <p class="help">Solo puedes aportar en los centros de tu cuenta.</p>
+  <fieldset>
+    <legend>Familia</legend>
+    <label><input type="radio" name="family" value="activity" {% if form.family != 'guidance' %}checked{% endif %}> Actividad</label>
+    <label><input type="radio" name="family" value="guidance" {% if form.family == 'guidance' %}checked{% endif %}> Orientación general</label>
+  </fieldset>
+  <label for="title">Título</label>
+  <input id="title" name="title" value="{{ form.title }}" required>
+  <p class="help">Sirve para localizar. No es la clave de identidad.</p>
+  <fieldset>
+    <legend>Audiencia</legend>
+    {% for code in audiences %}
+      <label><input type="checkbox" name="audience" value="{{ code }}" {% if code in form.audience %}checked{% endif %}> {{ code }}</label>
+    {% endfor %}
+  </fieldset>
+  <label for="file">Archivo PDF, DOCX, PNG o JPEG</label>
+  <input id="file" name="file" type="file" accept=".pdf,.docx,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" required>
+  <p class="help" id="upload-progress" aria-live="polite"></p>
+  <label for="issuer">Emisor</label>
+  <input id="issuer" name="issuer" value="{{ form.issuer or '' }}">
+  <label for="source_reference">Referencia de la fuente</label>
+  <input id="source_reference" name="source_reference" value="{{ form.source_reference or '' }}">
+  <p class="help">La URL, si la indicas, solo se guarda como procedencia. No se descarga.</p>
+  <label for="source_url">URL de procedencia</label>
+  <input id="source_url" name="source_url" value="{{ form.source_url or '' }}">
+  <label for="event_id">Identificador estable del evento</label>
+  <input id="event_id" name="event_id" value="{{ form.event_id or '' }}">
+  <label for="edition">Edición o curso</label>
+  <input id="edition" name="edition" value="{{ form.edition or '' }}">
+  <p class="help">Repetir la actividad otro año es otra edición, aunque el título se parezca.</p>
+  <label for="event_start">Inicio del evento, con zona</label>
+  <input id="event_start" name="event_start" value="{{ form.event_start or '' }}" placeholder="2026-11-05T17:00:00+01:00">
+  <label for="event_timezone">Zona horaria</label>
+  <input id="event_timezone" name="event_timezone" value="{{ form.event_timezone or 'Europe/Madrid' }}">
+  <label for="event_status">Estado del evento</label>
+  <select id="event_status" name="event_status">
+    <option value="">Sin dato</option>
+    {% for status in event_statuses %}
+      <option value="{{ status }}" {% if form.event_status == status %}selected{% endif %}>{{ status }}</option>
+    {% endfor %}
+  </select>
+  <p class="help">Una fecha futura no confirma el evento. Una cancelación no se borra del historial.</p>
+  <label for="location">Lugar</label>
+  <input id="location" name="location" value="{{ form.location or '' }}">
+  <label for="resource_type">Tipo de recurso de orientación</label>
+  <select id="resource_type" name="resource_type">
+    <option value="">No aplica</option>
+    {% for kind in resource_types %}
+      <option value="{{ kind }}" {% if form.resource_type == kind %}selected{% endif %}>{{ kind }}</option>
+    {% endfor %}
+  </select>
+  <label for="declared_version">Versión declarada del recurso</label>
+  <input id="declared_version" name="declared_version" value="{{ form.declared_version or '' }}">
+  <label for="academic_year">Curso académico</label>
+  <input id="academic_year" name="academic_year" value="{{ form.academic_year or '' }}" placeholder="2026-2027">
+  <label for="valid_from">Vigencia desde</label>
+  <input id="valid_from" name="valid_from" type="date" value="{{ form.valid_from or '' }}">
+  <label for="valid_to">Vigencia hasta</label>
+  <input id="valid_to" name="valid_to" type="date" value="{{ form.valid_to or '' }}">
+  <label><input type="checkbox" name="valid_to_inclusive" value="on"> El día indicado es inclusive. Se guardará el límite exclusivo del día siguiente y se conservará el valor declarado.</label>
+  <label><input type="checkbox" name="general_scope" value="on" {% if form.general_scope %}checked{% endif %}> Es un recurso general, no un caso individual</label>
+  <label><input type="checkbox" name="contains_individual_data" value="on" {% if form.contains_individual_data %}checked{% endif %}> Contiene datos individuales y no debe entregarse a T</label>
+  <label for="observations">Observaciones</label>
+  <textarea id="observations" name="observations">{{ form.observations or '' }}</textarea>
+  <button type="submit">Enviar aportación</button>
+</form>
+{% endblock %}

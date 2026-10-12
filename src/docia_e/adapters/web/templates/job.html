@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Trabajo · DocIA+{% endblock %}
+{% block content %}
+<h1>Trabajo de extracción</h1>
+<p>La subida ya terminó. Esto es el procesamiento, y sigue aunque cierres el navegador.</p>
+<p data-job-url="{{ url_for('job_view', job_id=job.job_id, format='json') }}" data-job-state="{{ job.state }}">Estado: <strong id="job-state">{{ job.state }}</strong></p>
+{% if job.error_code %}<p>Código: {{ job.error_code }}</p>{% endif %}
+<p><a href="{{ url_for('document_detail', document_id=version.document_id, version=version.id) }}">Volver a la ficha</a></p>
+{% endblock %}

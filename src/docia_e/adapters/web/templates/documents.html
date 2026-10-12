@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Catálogo · DocIA+{% endblock %}
+{% block content %}
+<h1>Catálogo</h1>
+<p>Un colaborador ve sus aportaciones y lo ya autorizado. No ve pendientes de otras cuentas.</p>
+<form class="filters" method="get" action="{{ url_for('documents') }}">
+  <label for="family">Familia <select id="family" name="family"><option value="">Todas</option><option value="activity">activity</option><option value="guidance">guidance</option></select></label>
+  <label for="documentary_state">Estado documental <input id="documentary_state" name="documentary_state" value="{{ filters.get('documentary_state', '') }}"></label>
+  <label for="run_status">Estado técnico <input id="run_status" name="run_status" value="{{ filters.get('run_status', '') }}"></label>
+  <label for="handoff_status">Entrega <input id="handoff_status" name="handoff_status" value="{{ filters.get('handoff_status', '') }}"></label>
+  <label for="academic_year">Curso <input id="academic_year" name="academic_year" value="{{ filters.get('academic_year', '') }}"></label>
+  <label for="event_status">Evento <input id="event_status" name="event_status" value="{{ filters.get('event_status', '') }}"></label>
+  <button type="submit">Filtrar</button>
+</form>
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr><th>Título</th><th>Familia</th><th>Documental</th><th>Técnico</th><th>Entrega</th><th>Evento</th><th>Recepción</th></tr>
+    </thead>
+    <tbody>
+      {% for item in page['items'] %}
+        <tr>
+          <td><a href="{{ url_for('document_detail', document_id=item.document_id, version=item.id) }}">{{ item.title }}</a></td>
+          <td>{{ item.family }}</td>
+          <td><span class="tag">{{ item.documentary_state }}</span></td>
+          <td><span class="tag">{{ item.run_status or '—' }}</span></td>
+          <td><span class="tag">{{ item.handoff_status }}</span></td>
+          <td>{{ item.event_status or '—' }}</td>
+          <td>{{ format_instant(item.received_at) }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7">No hay fichas con esos filtros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if page.next_cursor %}
+  <p><a href="{{ url_for('documents', cursor=page.next_cursor) }}">Siguiente página</a></p>
+{% endif %}
+{% endblock %}

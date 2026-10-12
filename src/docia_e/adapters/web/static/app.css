@@ -1,0 +1,52 @@
+:root {
+  color-scheme: light;
+  --ink: #1c1915;
+  --paper: #f6f3ec;
+  --card: #fffdf8;
+  --line: #d9d1c3;
+  --accent: #0f5c4c;
+  --danger: #8c2f2b;
+  --focus: #1c1915;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 100%;
+  line-height: 1.45;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 0.5rem; top: 0.5rem; background: #fff; z-index: 2; }
+.site-header, main { padding: 1rem; }
+.site-header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.brand { margin: 0; font-weight: 700; }
+.brand span { font-weight: 500; }
+nav { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+nav a, button, .tag { font: inherit; }
+a { color: var(--accent); }
+a:focus, button:focus, input:focus, select:focus, textarea:focus { outline: 3px solid var(--focus); outline-offset: 2px; }
+main { max-width: 70rem; }
+.card, .unit { background: var(--card); border: 1px solid var(--line); padding: 1rem; margin: 1rem 0; }
+.narrow { max-width: 28rem; }
+.stack label, .filters label { display: block; margin-top: 0.8rem; font-weight: 650; }
+input, select, textarea, button { width: 100%; max-width: 40rem; padding: 0.55rem; }
+button, nav button { width: auto; background: var(--accent); color: white; border: 0; padding: 0.55rem 0.9rem; }
+.help { color: #3f3a33; margin: 0.2rem 0 0; }
+.message { padding: 0.8rem; border: 1px solid var(--line); }
+.message.error { border-color: var(--danger); }
+.tag { display: inline-block; border: 1px solid var(--line); padding: 0.1rem 0.4rem; background: #fff; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.8rem; }
+.stats article { background: var(--card); border: 1px solid var(--line); padding: 0.8rem; }
+.stats p { font-size: 1.6rem; margin: 0.2rem 0; }
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; background: var(--card); }
+th, td { border-bottom: 1px solid var(--line); text-align: left; padding: 0.5rem; vertical-align: top; }
+.split { display: grid; gap: 1rem; }
+pre { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); padding: 0.6rem; }
+dl { display: grid; grid-template-columns: 8rem 1fr; gap: 0.3rem 0.8rem; }
+dt { font-weight: 650; }
+@media (max-width: 640px) {
+  dl { grid-template-columns: 1fr; }
+  .site-header { align-items: flex-start; }
+}
+@media (min-width: 800px) {
+  .split { grid-template-columns: 1fr 1fr; }
+}

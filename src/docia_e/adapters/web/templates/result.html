@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Resultado · DocIA+{% endblock %}
+{% block content %}
+<section class="card" data-clear-idempotency>
+  <h1>Resultado de la carga</h1>
+  <p class="tag">{{ result.outcome }}</p>
+  <p>{{ result.message }}</p>
+  <p>{{ result.next_action }}</p>
+  {% if result.version_id %}
+    <p><a href="{{ url_for('document_detail', document_id=result.document_id, version=result.version_id) }}">Abrir la ficha</a></p>
+  {% else %}
+    <p><a href="{{ url_for('documents') }}">Volver al catálogo</a></p>
+  {% endif %}
+</section>
+{% endblock %}

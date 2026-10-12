@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Aviso · DocIA+{% endblock %}
+{% block content %}
+<section class="card" role="alert">
+  <h1>{{ error.message }}</h1>
+  {% if error.next_action %}<p>{{ error.next_action }}</p>{% endif %}
+  {% if error.field_errors %}
+    <ul>
+      {% for field, text in error.field_errors.items() %}
+        <li>{{ field }}: {{ text }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <p>Referencia: {{ request_id }}</p>
+</section>
+{% endblock %}

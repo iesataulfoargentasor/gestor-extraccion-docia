@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Ficha · DocIA+{% endblock %}
+{% block content %}
+{% set version = detail.version %}
+<h1>{{ version.title }}</h1>
+<p>Recepción {{ format_instant(version.received_at) }}. Esa hora no es la de aprobación, ni la del evento, ni la de vigencia.</p>
+<ul class="tags">
+  <li>Documental <span class="tag">{{ version.documentary_state }}</span></li>
+  <li>Técnico <span class="tag">{{ version.run_status or 'sin extracción' }}</span></li>
+  <li>Entrega <span class="tag">{{ version.handoff_status }}</span></li>
+  <li>Evento <span class="tag">{{ version.event_status or 'sin dato' }}</span></li>
+</ul>
+<p><a href="{{ url_for('download', file_id=version.file_id) }}">Descargar original</a></p>
+<section>
+  <h2>Fuente y fechas</h2>
+  <dl>
+    <dt>Emisor</dt><dd>{{ version.issuer or 'no aportado' }}</dd>
+    <dt>Referencia</dt><dd>{{ version.source_reference or 'no aportada' }}</dd>
+    <dt>URL</dt><dd>{{ version.source_url or 'no aportada' }}</dd>
+    <dt>Publicación</dt><dd>{{ version.publication_date or 'no aportada' }}</dd>
+    <dt>Vigencia</dt><dd>{{ version.valid_from or '—' }} → {{ version.valid_to or '—' }}{% if version.valid_to_declared %} (declarado inclusive {{ version.valid_to_declared }}){% endif %}</dd>
+    <dt>Evento</dt><dd>{{ version.event_id or 'identidad pendiente' }} / {{ version.edition or 'edición pendiente' }}</dd>
+    <dt>Inicio</dt><dd>{{ version.event_start or 'fecha no aportada' }} {{ version.event_timezone or '' }}</dd>
+    <dt>Lugar</dt><dd>{{ version.location or 'no aportado' }}</dd>
+  </dl>
+</section>
+<section>
+  <h2>Versiones</h2>
+  <ol>
+    {% for item in versions %}
+      <li><a href="{{ url_for('document_detail', document_id=item.document_id, version=item.id) }}">{{ item.ordinal }}</a> · {{ item.documentary_state }} · relación {{ item.relation_state }} {{ item.relation_type or '' }}</li>
+    {% endfor %}
+  </ol>
+</section>
+<section>
+  <h2>Extracciones</h2>
+  <ul>
+    {% for extraction in detail.extractions %}
+      <li><a href="{{ url_for('extraction_view', extraction_id=extraction.id) }}">Intento {{ extraction.attempt }}</a> · {{ extraction.run_status }} · revisión {{ extraction.review_status }}</li>
+    {% else %}
+      <li>Todavía no hay extracción. Autorizar el documento no extrae solo.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% if version.submitted_by == actor.id and version.documentary_state == 'approved_for_processing' %}
+<section class="card">
+  <h2>Solicitar extracción</h2>
+  <p>La autorización documental ya está. Encolar el trabajo no lo acepta ni lo habilita para T.</p>
+  <form method="post" action="{{ url_for('enqueue_extraction', version_id=version.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+    <button type="submit">Encolar extracción</button>
+  </form>
+</section>
+{% endif %}
+{% if 'reviewer' in actor.roles and actor.id != version.submitted_by %}
+<section class="card">
+  <h2>Decisión documental</h2>
+  <form method="post" action="{{ url_for('version_review', version_id=version.id) }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+    <label for="decision">Acción</label>
+    <select id="decision" name="decision">
+      <option value="approve_for_processing">Aprobar para extraer</option>
+      <option value="return">Devolver</option>
+      <option value="reject">Rechazar</option>
+      <option value="withdraw">Retirar</option>
+      <option value="reopen">Reabrir</option>
+    </select>
+    <label for="reason">Motivo</label>
+    <textarea id="reason" name="reason" required></textarea>
+    <button type="submit">Registrar decisión</button>
+  </form>
+  <form method="post" action="{{ url_for('enqueue_extraction', version_id=version.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+    <button type="submit">Encolar extracción</button>
+  </form>
+  <form method="post" action="{{ url_for('version_relation', version_id=version.id) }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+    <label for="relation">Relación</label>
+    <select id="relation" name="relation">
+      <option value="replaces">Sustituye</option>
+      <option value="complements">Complementa</option>
+      <option value="distinct">Es distinta</option>
+      <option value="conflicts">Entra en conflicto</option>
+    </select>
+    <label for="relation_reason">Motivo de la relación</label>
+    <textarea id="relation_reason" name="reason" required></textarea>
+    <button type="submit">Resolver relación</button>
+  </form>
+  {% if version.selected_extraction_id %}
+    <form method="post" action="{{ url_for('create_handoff', version_id=version.id) }}" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+      <input type="hidden" name="extraction_id" value="{{ version.selected_extraction_id }}">
+      <label for="handoff_reason">Motivo para habilitar T</label>
+      <textarea id="handoff_reason" name="reason" required></textarea>
+      <button type="submit">Habilitar para T</button>
+    </form>
+  {% endif %}
+</section>
+{% endif %}
+{% if detail.document.current_handoff_id and 'reviewer' in actor.roles %}
+<section>
+  <h2>Entrega actual</h2>
+  <form method="post" action="{{ url_for('revoke', handoff_id=detail.document.current_handoff_id) }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="revoke_reason">Motivo de la retirada</label>
+    <textarea id="revoke_reason" name="reason" required></textarea>
+    <label for="reason_code">Código</label>
+    <select id="reason_code" name="reason_code">
+      <option value="withdrawn">Retirada</option>
+      <option value="individual_data">Datos individuales</option>
+    </select>
+    <button type="submit">Retirar entrega</button>
+  </form>
+</section>
+{% endif %}
+<section>
+  <h2>Historial</h2>
+  <ul>
+    {% for event in detail.audit %}
+      <li>{{ format_instant(event.at) }} · {{ event.action }} · {{ event.detail }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

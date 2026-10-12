@@ -1,0 +1,121 @@
+{
+  "schema_version": "docia-e/1.0",
+  "handoff_id": "handoff-ejemplo-001",
+  "document_id": "doc-ejemplo-001",
+  "version_id": "ver-ejemplo-001",
+  "extraction_id": "ext-ejemplo-001",
+  "metadata_revision": 2,
+  "profile": "actividades_orientacion",
+  "family": "activity",
+  "center_id": "centro-demo",
+  "title": "Jornada de orientación general",
+  "audience": [
+    "students",
+    "families"
+  ],
+  "academic_year": "2026-2027",
+  "source": {
+    "issuer": "Centro de demostración",
+    "reference": "Circular sintética para pruebas",
+    "url": null,
+    "publication_date": "2026-10-12",
+    "consulted_at": null,
+    "authorization_reference": "Material sintético docente"
+  },
+  "temporal": {
+    "valid_from": "2026-10-12",
+    "valid_to": "2026-11-06",
+    "event_start": "2026-11-05T17:00:00+01:00",
+    "event_end": null,
+    "event_timezone": "Europe/Madrid",
+    "event_status": "confirmed",
+    "resource_status": null,
+    "event_id": "evento-demo-001",
+    "edition": "2026-2027",
+    "location": "Salón de actos"
+  },
+  "relations": [],
+  "original": {
+    "file_id": "file-ejemplo-001",
+    "display_name": "jornada_demo.pdf",
+    "mime_type": "application/pdf",
+    "size_bytes": 1234,
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "download_path": "/files/file-ejemplo-001/download"
+  },
+  "extraction": {
+    "engine": "pypdf",
+    "engine_version": "version-de-la-fixture",
+    "config_fingerprint": "b0d4913f313bf0e18b6ec2d81d84ff748bdd415a26cb32243978b22b248567bc",
+    "configuration": {
+      "mode": "digital",
+      "page_number_base": 1,
+      "technical_normalization": "utf8-lf"
+    },
+    "started_at": "2026-10-12T10:00:00Z",
+    "completed_at": "2026-10-12T10:00:01Z",
+    "status": "succeeded",
+    "artifacts": [
+      {
+        "kind": "text",
+        "file_id": "text-ejemplo-001",
+        "mime_type": "text/plain; charset=utf-8",
+        "size_bytes": 149,
+        "sha256": "9215e55c41202d81419f6d8422a37dcb2d613ae851fc8854508311d170e7d364",
+        "download_path": "/files/text-ejemplo-001/download"
+      },
+      {
+        "kind": "extraction_json",
+        "file_id": "json-ejemplo-001",
+        "mime_type": "application/json",
+        "size_bytes": 2048,
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "download_path": "/files/json-ejemplo-001/download"
+      },
+      {
+        "kind": "quality_report",
+        "file_id": "quality-ejemplo-001",
+        "mime_type": "application/json",
+        "size_bytes": 512,
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "download_path": "/files/quality-ejemplo-001/download"
+      }
+    ]
+  },
+  "quality": {
+    "pages_expected": 1,
+    "pages_processed": 1,
+    "pages_failed": 0,
+    "coverage_complete": true,
+    "unresolved_blockers": 0,
+    "issues": [],
+    "review_status": "accepted",
+    "reviewed_by": "reviewer-demo",
+    "reviewed_at": "2026-10-12T10:10:00Z",
+    "reviewed_metadata_revision": 2,
+    "reviewed_extraction_id": "ext-ejemplo-001",
+    "review_scope": "Todas las páginas y campos temporales de esta muestra sintética"
+  },
+  "units": [
+    {
+      "unit_id": "u-0001",
+      "order": 1,
+      "kind": "page",
+      "method": "digital",
+      "text": "La jornada de orientación general tendrá lugar el 5 de noviembre de 2026 a las 17:00 en el salón de actos. Se dirige al alumnado y a las familias.",
+      "locator": {
+        "type": "pdf_page",
+        "page": 1,
+        "page_label": null
+      }
+    }
+  ],
+  "eligibility": {
+    "status": "ready",
+    "permitted_use": "general_center_information",
+    "authorized_by": "reviewer-demo",
+    "authorized_at": "2026-10-12T10:11:00Z",
+    "status_path": "/api/etl/v1/handoffs/handoff-ejemplo-001",
+    "changes_path": "/api/etl/v1/changes"
+  }
+}

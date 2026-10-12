@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DocIA+ extracción{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="site-header">
+    <p class="brand">DocIA+ <span>fase E</span></p>
+    <nav aria-label="Principal">
+      {% if actor %}
+        <a href="{{ url_for('dashboard_view') }}">Panel</a>
+        <a href="{{ url_for('documents') }}">Catálogo</a>
+        {% if 'collaborator' in actor.roles %}
+          <a href="{{ url_for('upload_new') }}">Nueva aportación</a>
+        {% endif %}
+        {% if 'administrator' in actor.roles %}
+          <a href="{{ url_for('admin') }}">Administración</a>
+        {% endif %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">Cerrar sesión</button>
+        </form>
+      {% endif %}
+    </nav>
+  </header>
+  <main id="contenido">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

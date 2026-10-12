@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Panel · DocIA+{% endblock %}
+{% block content %}
+<h1>Panel</h1>
+<p>Subir un documento no lo habilita para T. El estado documental, el técnico y el de entrega se muestran por separado.</p>
+{% if maintenance %}
+  <p class="message error" role="status">Mantenimiento activo: las cargas y las decisiones están pausadas.</p>
+{% endif %}
+<section class="stats" aria-label="Recuentos">
+  <article><h2>Versiones</h2><p>{{ counts.versions }}</p></article>
+  <article><h2>Trabajos</h2><p>{{ counts.by_job_state|length }}</p></article>
+  <article><h2>Entregas listas</h2><p>{{ counts.by_handoff_status.get('ready', 0) }}</p></article>
+  <article><h2>Discrepancias</h2><p>{{ counts.open_discrepancies }}</p></article>
+</section>
+<h2>Estados documentales</h2>
+<ul>
+  {% for name, total in counts.by_documentary_state.items() %}
+    <li><span class="tag">{{ name }}</span> {{ total }}</li>
+  {% else %}
+    <li>Todavía no hay versiones en tus centros.</li>
+  {% endfor %}
+</ul>
+<h2>Estado técnico</h2>
+<ul>
+  {% for name, total in counts.by_run_status.items() %}
+    <li><span class="tag">{{ name }}</span> {{ total }}</li>
+  {% endfor %}
+</ul>
+<h2>Sistema</h2>
+<ul>
+  <li>Worker: <strong>{{ 'reciente' if heartbeat else 'sin señal' }}</strong>{% if heartbeat %} ({{ format_instant(heartbeat.seen_at) }}){% endif %}</li>
+  <li>OCR: <strong>{{ 'disponible' if ocr.available else 'no disponible' }}</strong>{% if not ocr.available %}. Código {{ ocr.reason }}.{% endif %}</li>
+</ul>
+<p><a href="{{ url_for('documents', documentary_state='pending') }}">Abrir pendientes</a></p>
+{% endblock %}

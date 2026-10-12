@@ -1,0 +1,39 @@
+[project]
+name = "docia-extraccion"
+version = "1.0.0"
+description = "Fase E del ETL de DocIA+: extracción documental, revisión y entrega a T."
+requires-python = ">=3.12"
+dependencies = [
+  "flask==3.1.2",
+  "pymongo==4.15.3",
+  "pypdf==6.1.1",
+  "python-docx==1.2.0",
+  "pypdfium2==4.30.0",
+  "pytesseract==0.3.13",
+  "pillow==11.3.0",
+  "waitress==3.0.2",
+  "jsonschema==4.25.1",
+]
+
+[project.scripts]
+docia-e = "docia_e.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+docia_e = ["schema/*.json", "adapters/web/templates/*.html", "adapters/web/static/*"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: exige MongoDB en replica set",
+  "ocr: exige el binario Tesseract y el idioma spa",
+]

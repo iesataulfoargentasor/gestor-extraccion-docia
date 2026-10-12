@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:7.0.14
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - docia_e_mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  docia_e_mongo:

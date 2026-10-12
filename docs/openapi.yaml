@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: DocIA+ entrega E hacia T
+  version: docia-e/1.0
+paths:
+  /api/etl/v1/handoffs:
+    get:
+      summary: Entregas ready visibles para el token
+      parameters:
+        - in: query
+          name: cursor
+          schema: { type: string }
+        - in: query
+          name: family
+          schema: { type: string, enum: [activity, guidance] }
+      responses:
+        "200":
+          description: Lista de entregas listas
+        "401":
+          description: Sin token
+  /api/etl/v1/handoffs/{handoff_id}:
+    get:
+      summary: Paquete autorizado, o 410 si fue revocado para quien podía verlo
+      parameters:
+        - in: path
+          name: handoff_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paquete docia-e/1.0
+        "404":
+          description: No visible
+        "410":
+          description: Revocada, sin unidades
+  /api/etl/v1/changes:
+    get:
+      summary: Alta, revocación o sustitución desde una secuencia
+      parameters:
+        - in: query
+          name: cursor
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Cambios ordenados por sequence
+        "400":
+          description: Cursor mal formado
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

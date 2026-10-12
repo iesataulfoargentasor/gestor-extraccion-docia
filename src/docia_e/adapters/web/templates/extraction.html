@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Extracción · DocIA+{% endblock %}
+{% block content %}
+<h1>Revisión de extracción</h1>
+<p>Estado técnico <span class="tag">{{ extraction.run_status }}</span>. Revisión <span class="tag">{{ extraction.review_status }}</span>. Aceptar el texto no cambia el estado del evento.</p>
+<p>Cobertura completa: {{ 'sí' if extraction.coverage_complete else 'no' }}. Páginas o bloques esperados {{ extraction.pages_expected }}, procesados {{ extraction.pages_processed }}, fallidos {{ extraction.pages_failed }}.</p>
+<div class="split">
+  <section>
+    <h2>Original</h2>
+    <p><a href="{{ url_for('download', file_id=version.file_id) }}">Descargar el original para compararlo</a></p>
+    <p class="help">El PDF o el DOCX no se incrusta como HTML. El texto de la derecha es la extracción, no el archivo.</p>
+  </section>
+  <section>
+    <h2>Unidades</h2>
+    {% for unit in units %}
+      <article class="unit">
+        <h3>Unidad {{ unit.order }} · {{ unit.method }}</h3>
+        <p>{{ unit.locator }}</p>
+        <pre>{{ unit.text }}</pre>
+      </article>
+    {% else %}
+      <p>No hay más unidades en esta página.</p>
+    {% endfor %}
+    {% if units %}
+      <p><a href="{{ url_for('extraction_view', extraction_id=extraction.id, after=units[-1].order) }}">Siguientes unidades</a></p>
+    {% endif %}
+  </section>
+</div>
+<section>
+  <h2>Incidencias</h2>
+  <ul>
+    {% for issue in extraction.issues %}
+      <li><span class="tag">{{ issue.severity }}</span> {{ issue.code }} — {{ issue.explanation }} {{ issue.next_action }} {% if issue.resolved %}Resuelta: {{ issue.resolution }}{% endif %}</li>
+    {% else %}
+      <li>Sin incidencias registradas.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% if 'reviewer' in actor.roles and actor.id != version.submitted_by %}
+<form method="post" action="{{ url_for('extraction_review', extraction_id=extraction.id) }}" class="stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="expected_revision" value="{{ version.metadata_revision }}">
+  <label for="review_scope">Qué has revisado</label>
+  <textarea id="review_scope" name="review_scope" required></textarea>
+  {% for issue in extraction.issues if not issue.resolved %}
+    <fieldset>
+      <legend>{{ issue.code }}</legend>
+      <input type="hidden" name="issue_code" value="{{ issue.code }}">
+      <label>Resolución
+        <select name="issue_resolution">
+          <option value="">Sin resolver</option>
+          <option value="blank_confirmed">Confirmar página en blanco</option>
+          <option value="false_positive">Falso positivo de privacidad</option>
+          <option value="needs_better_copy">Pedir una copia mejor</option>
+        </select>
+      </label>
+    </fieldset>
+  {% endfor %}
+  <label for="decision">Decisión</label>
+  <select id="decision" name="decision">
+    <option value="accepted">Aceptar extracción</option>
+    <option value="rejected">Rechazar extracción</option>
+  </select>
+  <label for="reason">Motivo</label>
+  <textarea id="reason" name="reason"></textarea>
+  <button type="submit">Guardar revisión de la extracción</button>
+</form>
+{% endif %}
+{% endblock %}

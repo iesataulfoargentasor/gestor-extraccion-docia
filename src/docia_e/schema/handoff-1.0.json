@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docia.local/schemas/docia-e-1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handoff_id",
+    "document_id",
+    "version_id",
+    "extraction_id",
+    "metadata_revision",
+    "profile",
+    "family",
+    "center_id",
+    "title",
+    "audience",
+    "academic_year",
+    "source",
+    "temporal",
+    "relations",
+    "original",
+    "extraction",
+    "quality",
+    "units",
+    "eligibility"
+  ],
+  "properties": {
+    "schema_version": { "const": "docia-e/1.0" },
+    "handoff_id": { "type": "string" },
+    "document_id": { "type": "string" },
+    "version_id": { "type": "string" },
+    "extraction_id": { "type": "string" },
+    "metadata_revision": { "type": "integer" },
+    "profile": { "type": "string" },
+    "family": { "enum": ["activity", "guidance"] },
+    "center_id": { "type": "string" },
+    "title": { "type": "string" },
+    "audience": { "type": "array", "items": { "type": "string" } },
+    "academic_year": { "type": ["string", "null"] },
+    "source": { "type": "object" },
+    "temporal": { "type": "object" },
+    "relations": { "type": "array" },
+    "original": { "type": "object" },
+    "extraction": { "type": "object" },
+    "quality": { "type": "object" },
+    "units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["unit_id", "order", "kind", "method", "text", "locator"],
+        "properties": {
+          "locator": {
+            "type": "object",
+            "properties": { "page": { "type": ["integer", "null"] } }
+          }
+        }
+      }
+    },
+    "eligibility": { "type": "object" }
+  }
+}
